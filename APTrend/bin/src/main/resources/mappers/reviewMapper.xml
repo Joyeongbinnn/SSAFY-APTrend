@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.ssafy.repository.ReviewRepository">
+ 	<insert id="createReview">
+    	insert into Review(user_id, Apart_id, content, rate) 
+    	values (#{userId}, #{apartId}, #{content}, #{rate})
+    </insert>
+    <update id="updateReview">
+    	update User content=#{content}, rate=#{rate}
+    	where Apart_id=#{apartId} and User_id=#{userId}
+    </update>
+    <delete id="deleteReview">
+    	delete from Review
+    	where User_id=#{userId} and Apart_id=#{apartId}
+    </delete>
+    <select id="detailReview" resultType="Review">
+        SELECT User_id userId, Apart_id apartId, content, rate
+        FROM Review
+        WHERE Apart_id = #{apartId} and User_id = #{userId}
+    </select>
+    <select id="apartReviewList" resultType="ApartReview">
+        SELECT id apartId, address, name, average_rating averageRating, review_count reviewCount
+        FROM Apart JOIN Apart_Summary
+        limit 10 OFFSET #{page}
+    </select>
+    <select id="apartDetailReviewList" resultType="Review">
+        SELECT User_id userId, Apart_id apartId, content, rate
+        FROM Review
+        WHERE Apart_id = #{apartId}
+    </select>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.ssafy.repository.UserRepository"> 
+    <insert id="createUser">
+    	insert into User (name, email, phone_number, address, role, is_verified) 
+    	values (#{name}, #{email}, #{phoneNumber}, #{address}, #{role}, #{isVerified})
+    </insert>
+    <insert id="createUserAuth">
+    	insert into User_Auth (User_id, provider, provider_id, login_id, password) 
+    	values (#{userId}, #{provider}, #{providerId}, #{loginId}, #{password})
+    </insert>
+    <update id="updateUser">
+    	update User
+    	<set>
+    		<if test="email!=null">
+    			email=#{email},
+    		</if>
+    		<if test="phoneNumber!=null">
+    			phone_number=#{phoneNumeber},
+    		</if>
+    		<if test="address!=null">
+    			address=#{address},
+    		</if>
+    		<if test="isVerified!=null">
+    			is_verified=#{isVerified},
+    		</if>
+    	</set>
+    	where id=#{id}
+    </update>
+    <delete id="deleteUser">
+    	delete from User where id=#{id}
+    </delete>
+    <select id="findByLocalLoginId" resultType="com.ssafy.dto.user.UserAuth">
+        SELECT User_id userId, provider, provider_id providerId, login_id loginId, password
+        FROM User_Auth
+        WHERE login_id = #{loginId}
+    </select>
+    <select id="findById" resultType="int">
+        SELECT count(*)
+        FROM User_Auth
+        WHERE login_id = #{id}
+    </select>
+    <select id="findByIdReturnUser" resultType="com.ssafy.dto.user.User">
+        SELECT id, name, email, phone_number AS phoneNumber,
+               address, role, is_verified AS isVerified, created_at AS createdAt
+        FROM User
+        WHERE id=#{id}
+    </select>
+    <select id="findByEmail" resultType="com.ssafy.dto.user.User">
+        SELECT id, name, email, phone_number AS phoneNumber,
+               address, role, is_verified AS isVerified, created_at AS createdAt
+        FROM User
+        WHERE email=#{email}
+        LIMIT 1
+    </select>
+    <select id="findByEmailReturnInt" resultType="int">
+        SELECT count(*)
+        FROM User
+        WHERE email=#{email}
+        LIMIT 1
+    </select>
+    <select id="findUserIdByEmail" resultType="int">
+        SELECT id
+        FROM User
+        WHERE email=#{email}
+    </select>
+    <select id="findByLoginId" resultType="com.ssafy.dto.user.User">
+        SELECT id, name, email, phone_number AS phoneNumber,
+               address, role, is_verified AS isVerified, created_at AS createdAt
+        FROM User
+        JOIN User_auth ON User.id = User_auth.User_id
+        WHERE User_auth.login_id = #{loginId}
+    </select>
+    <select id="findLocalDataByLoginId" resultType="com.ssafy.dto.user.UserJoinUserAuth">
+    	SELECT id, name, email, phone_number AS phoneNumber,
+               address, role, is_verified AS isVerified, created_at AS createdAt,
+               provider, provider_id AS providerId, login_id AS loginId, password
+    	FROM User
+        JOIN User_auth ON User.id = User_auth.User_id
+        WHERE User_auth.login_id = #{loginId}
+    </select>
+    <select id="findUserByEmail" resultType="com.ssafy.dto.user.User">
+        SELECT id, name, email, phone_number AS phoneNumber,
+               address, role, is_verified AS isVerified, created_at AS createdAt
+        FROM User
+        WHERE email=#{email}
+    </select>
+    <resultMap type="User" id="UserMap">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="email" property="email" />
+        <result column="phone_number" property="phoneNumber" />
+        <result column="address" property="address" />
+        <result column="role" property="role" />
+        <result column="is_verified" property="isVerified" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <resultMap id="UserAuth" type="UserAuth">
+    	<id column="auth_id" property="authId"/>
+    	<result column="User_id" property="userId" />
+    	<result column="provider" property="provider" />
+    	<result column="provider_id" property="providerId" />
+    	<result column="login_id" property="loginId" />
+    	<result column="password" property="password" />
+    </resultMap>
+
+    <!-- END -->
+</mapper>

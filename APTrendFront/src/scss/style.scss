@@ -1,0 +1,55 @@
+@import './variables';
+@import 'vuetify/styles/main.sass';
+@import './override';
+@import './layout/container';
+@import './layout/sidebar';
+@import './layout/footer';
+@import './layout/topbar';
+
+@import './components/VAlert';
+@import './components/VList';
+@import './components/VButtons';
+@import './components/VCard';
+@import './components/VBadge';
+@import './components/VBreadcrumb';
+@import './components/VField';
+@import './components/VInput';
+@import './components/VNavigationDrawer';
+@import './components/VShadow';
+@import './components/VTextField';
+@import './components/VTextarea';
+
+@import './page/dashboards';
+
+@import 'vue3-perfect-scrollbar/style.css';
+
+svg{
+    color:red;
+}
+
+:root {
+    --login-green:#009164;
+    --login-right:#FAFAFA;
+    --login-text:#333333;
+    --login-border:#CCCCCC;
+    --login-google:#ffffff;
+    --login-lightgreen:#00A174;
+    --login-kakao:#FEE500;
+    --login-kakao-hover:#FFDD00;
+
+    --review-bg:#ffffff;
+    --review-bg-lightgray:#f4f4f5;
+    --review-bg-gray:#6b7280;
+    --review-bg-yellow:#fefce8;
+    --review-bg-green:#f0fdf4;
+    --review-bg-red:#fef2f2;
+    --review-text-white: #ffffff;
+    --review-text-lightgray: #9ca3af;
+    --review-text-gray:#374151;
+    --review-text-yellow:#eab308;
+    --review-text-green:#15803d;
+    --review-text-red:#b91c1c;
+    --review-button-bg:#14b8a6;
+    --review-button-hover:#0d9488;
+    --review-icon-bg:#dbeafe;
+}

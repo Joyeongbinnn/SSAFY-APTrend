@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.ssafy.repository.BoardRepository">
+ 	<insert id="createBoard" parameterType="com.ssafy.dto.board.Board" useGeneratedKeys="true" keyProperty="id">
+	  INSERT INTO Board(user_id, title, tag, summary, content)
+	  VALUES (#{userId}, #{title}, #{tag}, #{summary}, #{content})
+	</insert>
+ 	<insert id="createBoardSummary">
+ 		insert into Board_Summary(board_id, comment_count, recommend) 
+    	values (#{id}, 0, 0)
+ 	</insert>
+ 	<update id="updateBoard">
+ 		update Board
+    	SET title=#{title}, tag=#{tag}, summary=#{summary}, content=#{content}
+    	where id=#{id}
+ 	</update>
+ 	<delete id="deleteBoard">
+ 		delete from Board
+ 		where id=#{id}
+ 	</delete>
+ 	<delete id="deleteBoardSummary">
+ 		delete from Board_Summary
+ 		where id=#{id}
+ 	</delete>
+ 	<select id="detailBoard" resultType="Board">
+ 		select board.id, User_id userId,user.name userName, title, board.created_at createdAt, summary, content, comment_count commentCount, recommend
+ 		from Board
+ 		join Board_Summary On (id=board_id)
+ 		join User On (board.user_id=user.id)
+ 		where board.id=#{id}
+ 	</select>
+ 	<select id="boardList" resultType="Board">
+ 		select board.id, User_id userId, user.name userName, title, board.created_at createdAt, summary, content, comment_count commentCount, recommend
+ 		from Board
+ 		join Board_Summary On (board.id=board_summary.board_id)
+ 		join User On (board.user_id=user.id)
+ 		limit 10 offset #{page}
+ 	</select>
+ </mapper>

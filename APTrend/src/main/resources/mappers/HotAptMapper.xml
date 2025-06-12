@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.repository.HotAptRepository">
+
+    <select id="selectHotApartments" resultType="com.ssafy.dto.HotAptDto">
+        SELECT 
+            region, apt_name as name, COUNT(*) AS `order`,
+            CONCAT('₩', ROUND(AVG(deal_amount) / 10000, 1), '억') AS amount,
+            0.0 AS rate
+        FROM apt_deal_simple
+        WHERE deal_year = 2025 AND deal_month = 4
+        GROUP BY region, apt_name
+        ORDER BY COUNT(*) DESC
+        LIMIT 10
+    </select>
+
+</mapper>

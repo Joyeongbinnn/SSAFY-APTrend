@@ -1,0 +1,260 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `APTrend` DEFAULT CHARACTER SET utf8 ;
+USE `APTrend` ;
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`User`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`User` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(50) NOT NULL,
+  `phone_number` VARCHAR(20) NOT NULL,
+  `address` TEXT NULL,
+  `role` VARCHAR(20) NULL,
+  `is_verified` TINYINT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT current_timestamp,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Board`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Board` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `User_id` BIGINT NOT NULL,
+  `title` VARCHAR(100) NULL,
+  `created_at` TIMESTAMP NULL DEFAULT current_timestamp,
+  `tag` VARCHAR(100) NULL,
+  `summary` TEXT NULL,
+  `content` TEXT NULL,
+  PRIMARY KEY (`id`, `User_id`),
+  INDEX `fk_Board_User_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Board_User`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `APTrend`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`User_auth`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`User_auth` (
+  `auth_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `User_id` BIGINT NOT NULL,
+  `provider` VARCHAR(20) NOT NULL,
+  `provider_id` VARCHAR(100) NULL,
+  `login_id` VARCHAR(100) NULL,
+  `password` VARCHAR(100) NULL,
+  PRIMARY KEY (`auth_id`, `User_id`),
+  INDEX `fk_User_auth_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_User_auth_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `APTrend`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Sido`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Sido` (
+  `code` INT NOT NULL,
+  PRIMARY KEY (`code`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Sigungu`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Sigungu` (
+  `code` INT NOT NULL,
+  `Sido_code` INT NOT NULL,
+  PRIMARY KEY (`code`, `Sido_code`),
+  INDEX `fk_Sigungu_Sido1_idx` (`Sido_code` ASC) VISIBLE,
+  CONSTRAINT `fk_Sigungu_Sido1`
+    FOREIGN KEY (`Sido_code`)
+    REFERENCES `APTrend`.`Sido` (`code`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Apart`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Apart` (
+  `id` VARCHAR(100) NOT NULL,
+  `address` VARCHAR(100) NULL,
+  `name` VARCHAR(100) NULL,
+  `latitude` VARCHAR(100) NULL,
+  `longitude` VARCHAR(100) NULL,
+  `Sigungu_code` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Apart_Sigungu1_idx` (`Sigungu_code` ASC) VISIBLE,
+  CONSTRAINT `fk_Apart_Sigungu1`
+    FOREIGN KEY (`Sigungu_code`)
+    REFERENCES `APTrend`.`Sigungu` (`code`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Review`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Review` (
+  `User_id` BIGINT NOT NULL,
+  `Apart_id` VARCHAR(100) NOT NULL,
+  `content` TEXT NULL,
+  `rate` INT NULL,
+  PRIMARY KEY (`User_id`, `Apart_id`),
+  INDEX `fk_Review_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Review_Apart1`
+    FOREIGN KEY (`Apart_id`)
+    REFERENCES `APTrend`.`Apart` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Review_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `APTrend`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Apart_Summary`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Apart_Summary` (
+  `Apart_id` VARCHAR(100) NOT NULL,
+  `average_rating` FLOAT NULL,
+  `review_count` INT NULL,
+  PRIMARY KEY (`Apart_id`),
+  CONSTRAINT `fk_Apart_Summary_Apart1`
+    FOREIGN KEY (`Apart_id`)
+    REFERENCES `APTrend`.`Apart` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Favorite`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Favorite` (
+  `User_id` BIGINT NOT NULL,
+  `Apart_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`User_id`, `Apart_id`),
+  INDEX `fk_Favorite_User1_idx` (`User_id` ASC) VISIBLE,
+  INDEX `fk_Favorite_Apart1_idx` (`Apart_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Favorite_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `APTrend`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Favorite_Apart1`
+    FOREIGN KEY (`Apart_id`)
+    REFERENCES `APTrend`.`Apart` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Comment`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Comment` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `Board_id` BIGINT NOT NULL,
+  `Board_User_id` BIGINT NOT NULL,
+  `content` TEXT NULL,
+  `parent_id` INT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT current_timestamp,
+  PRIMARY KEY (`id`, `Board_id`),
+  INDEX `fk_Comment_Board1_idx` (`Board_id` ASC, `Board_User_id` ASC) VISIBLE,
+  INDEX `fk_Comment_Comment1_idx` (`parent_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Comment_Board1`
+    FOREIGN KEY (`Board_id` , `Board_User_id`)
+    REFERENCES `APTrend`.`Board` (`id` , `User_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Comment_Comment1`
+    FOREIGN KEY (`parent_id`)
+    REFERENCES `APTrend`.`Comment` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Board_Summary`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Board_Summary` (
+  `Board_id` BIGINT NOT NULL,
+  `comment_count` INT NULL,
+  `recommend` INT NULL,
+  PRIMARY KEY (`Board_id`),
+  CONSTRAINT `fk_Board_Summary_Board1`
+    FOREIGN KEY (`Board_id`)
+    REFERENCES `APTrend`.`Board` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Sigungu_period`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Sigungu_period` (
+  `period` INT NOT NULL,
+  `is_increase` TINYINT NULL,
+  `percentage` FLOAT NULL,
+  `Sigungu_code` INT NOT NULL,
+  PRIMARY KEY (`period`, `Sigungu_code`),
+  INDEX `fk_Sigungu_period_Sigungu1_idx` (`Sigungu_code` ASC) VISIBLE,
+  CONSTRAINT `fk_Sigungu_period_Sigungu1`
+    FOREIGN KEY (`Sigungu_code`)
+    REFERENCES `APTrend`.`Sigungu` (`code`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `APTrend`.`Sido_period`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `APTrend`.`Sido_period` (
+  `period` INT NOT NULL,
+  `is_increase` TINYINT NULL,
+  `percentage` FLOAT NULL,
+  `Sido_code` INT NOT NULL,
+  PRIMARY KEY (`period`, `Sido_code`),
+  INDEX `fk_Sido_period_Sido1_idx` (`Sido_code` ASC) VISIBLE,
+  CONSTRAINT `fk_Sido_period_Sido1`
+    FOREIGN KEY (`Sido_code`)
+    REFERENCES `APTrend`.`Sido` (`code`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

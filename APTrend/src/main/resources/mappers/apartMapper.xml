@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.repository.ApartRepository">
+
+	<select id="selectAll" resultType="com.ssafy.dto.ApartDto">
+		SELECT id, name, address,
+		latitude, longitude, sigungu,
+		price, rate
+		FROM apart
+	</select>
+
+	<select id="findMonthlyDealsById" resultMap="DealStatsMap">
+		SELECT
+		CONCAT(deal_year, '-', LPAD(deal_month, 2, '0')) AS month,
+		ROUND(AVG(deal_amount)) AS average,
+		GROUP_CONCAT(deal_amount) AS deals
+		FROM apt_deal_simple
+		WHERE CONCAT(TRIM(road_address), '|', TRIM(apt_name)) = #{id}
+		GROUP BY deal_year, deal_month
+		ORDER BY deal_year, deal_month
+	</select>
+
+
+	<resultMap id="DealStatsMap"
+		type="com.ssafy.dto.DealStatsDto">
+		<result property="month" column="month" />
+		<result property="average" column="average" />
+		<result property="rawDealString" column="deals"
+			javaType="java.lang.String" />
+
+	</resultMap>
+
+
+
+</mapper>
